@@ -1,0 +1,4 @@
+YoungCoin
+=========
+
+TODO

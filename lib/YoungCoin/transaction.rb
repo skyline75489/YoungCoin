@@ -1,5 +1,5 @@
 require 'json'
-require 'jose'
+require 'rbnacl'
 
 module YoungCoin
   class TransactionIn
@@ -22,7 +22,7 @@ module YoungCoin
         index: @index,
         amount: @amount,
         address: @address,
-        signature: @signature
+        signature: @signature,
       }
     end
 
@@ -34,8 +34,8 @@ module YoungCoin
       sha = Digest::SHA256.new
       sha.update(@index.to_s + @transaction.to_s + @address)
       hash = sha.hexdigest
-      jwk = JOSE::JWK.from_oct('0xDEADBEEF')
-      jwk.sign(hash, 'alg' => 'HS256').compact
+      signing_key = RbNaCl::SigningKey.new('0xDEADBEEF0xDEADBEEF0xDEADBEEFSB')
+      signing_key.sign(hash).unpack('H*')[0]
     end
   end
 

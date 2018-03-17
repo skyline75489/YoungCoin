@@ -1,16 +1,9 @@
 require 'pp'
 require 'json'
-require_relative '../lib/YoungCoin'
+require_relative '../lib/YoungCoin/blockchain'
 
-b0 = YoungCoin::Block.genesis
-t0 = YoungCoin::Transaction.new(0, 'reward')
-t0.data[:inputs] << YoungCoin::TransactionIn.new(0, t0.id, 10_000, '111')
-t0.data[:outputs] << YoungCoin::TransactionOut.new(10_000, '222')
+chain = YoungCoin::BlockChain.new()
 
-b0.add_transaction(t0)
-
-b1 = YoungCoin::Block.next(b0, 'T1')
-b2 = YoungCoin::Block.next(b1, 'T2')
-b3 = YoungCoin::Block.next(b2, 'T3')
-
-pp b0
+b1 = chain.generate_next_block('d1')
+chain.add_block(b1)
+pp chain

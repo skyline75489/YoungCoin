@@ -7,14 +7,19 @@ module YoungCoin
     attr_reader :data
     attr_reader :previous_hash
     attr_reader :hash
+    attr_reader :difficulty
+    attr_reader :nonce
+
     attr_reader :transactions
 
-    def initialize(index, data, previous_hash)
+    def initialize(index, previous_hash, timestamp, data, hash, difficulty, nonce)
       @index = index
-      @timestamp = Time.now
+      @timestamp = timestamp
       @data = data
       @previous_hash = previous_hash
-      @hash = calc_hash
+      @hash = hash
+      @difficulty = difficulty
+      @hash = hash
       @transactions = []
     end
 
@@ -33,22 +38,16 @@ module YoungCoin
       as_json(*options).to_json(*options)
     end
 
-    def calc_hash
-      sha = Digest::SHA256.new
-      sha.update(@index.to_s + @timestamp.to_s + @data + @previous_hash + @transactions.to_s)
-      sha.hexdigest
+    def self.calc_hash(index, previous_hash, timestamp, data, difficulty, nonce)
+      Digest::SHA256.hexdigest(index.to_s + timestamp.to_s + data + previous_hash + nonce.to_s)
+    end
+
+    def self.genesis
+      Block.new(0, '0', 1465154706, 'Genesis', '9f981542f2c7b9320727d8b795c0c50d0e33cdf533e43d4596ddd1c6718bb6c4', 0, 0)
     end
 
     def add_transaction(transaction)
       @transactions << transaction
-    end
-
-    def self.genesis
-      Block.new(0, 'Genesis', '0')
-    end
-
-    def self.next(previous, data = 'data...')
-      Block.new(previous.index + 1, data, previous.hash)
     end
   end
 end
